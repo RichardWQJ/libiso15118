@@ -46,7 +46,7 @@ private:
     void handle_sdp_server_input();
 
     const TbdConfig config;
-    const session::feedback::Callbacks callbacks;
+    session::feedback::Callbacks callbacks;
 };
 
 } // namespace iso15118

@@ -2,3 +2,5 @@
 .vscode
 pki
 test/sample_data
+BUILD
+BUILD_ARM

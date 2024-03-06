@@ -118,7 +118,7 @@ Session::Session(std::unique_ptr<io::IConnection> connection_, const d20::Sessio
     connection(std::move(connection_)),
     log(this),
     ctx(message_exchange, active_control_event, callbacks, session_stopped, log, config) {
-
+    
     next_session_event = offset_time_point_by_ms(get_current_time_point(), SESSION_IDLE_TIMEOUT_MS);
     connection->set_event_callback([this](io::ConnectionEvent event) { this->handle_connection_event(event); });
     fsm.reset<d20::state::SupportedAppProtocol>(ctx);
@@ -189,12 +189,13 @@ TimePoint const& Session::poll() {
 }
 
 void Session::handle_connection_event(io::ConnectionEvent event) {
+
     using Event = io::ConnectionEvent;
     switch (event) {
     case Event::ACCEPTED:
         assert(state.connected == false);
         state.connected = true;
-        log("Accepted connection on port %d", connection->get_public_endpoint().port);
+        logf("Accepted connection on port %d\n", connection->get_public_endpoint().port);
         return;
 
     case Event::NEW_DATA:

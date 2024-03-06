@@ -46,13 +46,13 @@ SdpServer::SdpServer() {
     const auto bind_result =
         bind(fd, reinterpret_cast<const struct sockaddr*>(&socket_address), sizeof(socket_address));
     if (bind_result == -1) {
-        log_and_throw("Failed to bind to socket");
+        log_and_throw("Failed to bind to socket\n");
     }
 }
 
 SdpServer::~SdpServer() {
     // FIXME (aw): rather use some RAII class for this!
-    logf("Shutting down SDP server!");
+    logf("Shutting down SDP server!\n");
     if (fd != -1) {
         close(fd);
     }
@@ -64,27 +64,30 @@ PeerRequestContext SdpServer::get_peer_request() {
 
     const auto read_result = recvfrom(fd, udp_buffer, sizeof(udp_buffer), 0,
                                       reinterpret_cast<struct sockaddr*>(&peer_address), &peer_addr_len);
+
     if (read_result <= 0) {
         log_and_throw("Read on sdp server socket failed");
     }
 
     if (peer_addr_len > sizeof(peer_address)) {
-        log_and_throw("Unexpected address length during read on sdp server socket");
+        log_and_throw("Unexpected address length during read on sdp server socket\n");
     }
 
     log_peer_hostname(peer_address);
 
     if (read_result == sizeof(udp_buffer)) {
-        logf("Read on sdp server socket succeeded, but message is to big for the buffer");
+        logf("Read on sdp server socket succeeded, but message is to big for the buffer\n");
         return PeerRequestContext{false};
     }
+
+    // parse_sdp_request(udp_buffer);
 
     uint32_t sdp_payload_len;
     const auto parse_sdp_result = V2GTP20_ReadHeader(udp_buffer, &sdp_payload_len, V2GTP20_SDP_REQUEST_PAYLOAD_ID);
 
     if (parse_sdp_result != V2GTP_ERROR__NO_ERROR) {
         // FIXME (aw): we should not die here immediately
-        logf("Sdp server received an unexpected payload");
+        logf("Sdp server received an unexpected payload\n");
         return PeerRequestContext{false};
     }
 
@@ -102,6 +105,8 @@ PeerRequestContext SdpServer::get_peer_request() {
 
 void SdpServer::send_response(const PeerRequestContext& request, const Ipv6EndPoint& ipv6_endpoint) {
     // that worked, now response
+    logf("Start of send_response.\n");
+
     uint8_t v2g_packet[28];
     uint8_t* sdp_response = v2g_packet + 8;
     memcpy(sdp_response, ipv6_endpoint.address, sizeof(ipv6_endpoint.address));
@@ -120,11 +125,13 @@ void SdpServer::send_response(const PeerRequestContext& request, const Ipv6EndPo
 
     sendto(fd, v2g_packet, sizeof(v2g_packet), 0, reinterpret_cast<const sockaddr*>(&request.address),
            peer_addr_len);
+
+    logf("End of send_response.\n");
 }
 
-#if 0
+#if 1
 
-void parse_sdp_request(uint8_t* packet) {
+void SdpServer::parse_sdp_request(uint8_t* packet) {
     // check sdp header
     uint32_t sdp_payload_len;
     const auto parse_sdp_result = V2GTP20_ReadHeader(packet, &sdp_payload_len, V2GTP20_SDP_REQUEST_PAYLOAD_ID);

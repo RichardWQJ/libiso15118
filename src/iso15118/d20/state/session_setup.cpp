@@ -67,7 +67,8 @@ FsmSimpleState::HandleEventReturnType SessionSetup::handle_event(AllocatorType& 
         // Todo(sl): Going straight to ChargeParameterDiscovery?
 
     } else {
-        ctx.log("expected SessionSetupReq! But code type id: %d", variant->get_type());
+        // ctx.log("expected SessionSetupReq! But code type id: %d", variant->get_type());
+        logf("expected SessionSetupReq! But code type id: %d\n", variant->get_type());
 
         // Sequence Error
         const message_20::Type req_type = variant->get_type();

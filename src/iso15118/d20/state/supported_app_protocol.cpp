@@ -8,13 +8,17 @@
 
 #include <iso15118/detail/d20/context_helper.hpp>
 
+#include <iostream>
+
 namespace iso15118::d20::state {
 
 static auto handle_request(const message_20::SupportedAppProtocolRequest& req) {
     message_20::SupportedAppProtocolResponse res;
 
     for (const auto& protocol : req.app_protocol) {
-        if (protocol.protocol_namespace.compare("urn:iso:std:iso:15118:-20:DC") == 0) {
+        std::cout << "protocol_namespace: [" << protocol.protocol_namespace << "]" << std::endl;
+        // if (protocol.protocol_namespace.compare("urn:iso:std:iso:15118:-20:DC") == 0) {
+        if (protocol.protocol_namespace.compare("urn:iso:15118:2:2013:MsgDef") == 0) {
             res.schema_id = protocol.schema_id;
             return response_with_code(res,
                                       message_20::SupportedAppProtocolResponse::ResponseCode::OK_SuccessfulNegotiation);

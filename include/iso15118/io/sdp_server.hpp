@@ -35,6 +35,8 @@ public:
     }
 
 private:
+    void parse_sdp_request(uint8_t* packet);
+    
     int fd{-1};
     uint8_t udp_buffer[2048];
 };

@@ -7,7 +7,7 @@ project(iso15118
 )
 
 find_package(everest-cmake 0.1 REQUIRED
-    PATHS ../everest-cmake
+    PATHS "/home/richard/workspace/everest-workspace/everest-cmake"
 )
 
 # options

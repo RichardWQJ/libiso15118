@@ -73,6 +73,8 @@ void TbdController::handle_sdp_server_input() {
         return;
     }
 
+    logf("Enter handle_sdp_server_input, tls_negotiation_strategy: %d\n", int(config.tls_negotiation_strategy));
+
     switch (config.tls_negotiation_strategy) {
     case config::TlsNegotiationStrategy::ACCEPT_CLIENT_OFFER:
         // nothing to change
@@ -96,7 +98,7 @@ void TbdController::handle_sdp_server_input() {
     const auto ipv6_endpoint = connection->get_public_endpoint();
 
     // Todo(sl): Check if session_config is empty
-    const auto& new_session = sessions.emplace_back(std::move(connection), session_config, callbacks);
+    sessions.emplace_back(std::move(connection), session_config, callbacks);
 
     sdp_server.send_response(request, ipv6_endpoint);
 }

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2023 Pionix GmbH and Contributors to EVerest
+#include <iostream>
 #include <iso15118/session/logger.hpp>
 
 #include <iso15118/detail/helper.hpp>
@@ -25,6 +26,7 @@ void SessionLogger::exi(uint16_t payload_type, uint8_t const* data, size_t len,
 }
 
 void SessionLogger::enter_state(const std::string& new_state) {
+    std::cout << ">> Enter State: " << new_state << std::endl;
     if (last_state_name.size()) {
         this->operator()("Transition (%s -> %s)", last_state_name.c_str(), new_state.c_str());
     } else {
